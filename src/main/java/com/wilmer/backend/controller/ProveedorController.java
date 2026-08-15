@@ -37,6 +37,21 @@ public class ProveedorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
 
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Proveedor> editar(@PathVariable @NonNull Long id, @Valid @RequestBody @NonNull Proveedor proveedor) {
+        return proveedorService.buscarPorId(id)
+                .map(existente -> {
+                    existente.setNombre(proveedor.getNombre());
+                    existente.setFoto(proveedor.getFoto());
+                    existente.setDescripcion(proveedor.getDescripcion());
+                    existente.setProductosTop(proveedor.getProductosTop());
+                    existente.setRedSocial(proveedor.getRedSocial());
+                    return ResponseEntity.ok(proveedorService.guardar(existente));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable @NonNull Long id) {
         proveedorService.eliminar(id);
